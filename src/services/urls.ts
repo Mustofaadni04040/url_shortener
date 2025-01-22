@@ -1,6 +1,7 @@
 import httpError from "http-errors";
 import knex from "../config/knex";
 import { validateCreateShortURL, validateUpdateShortURL } from "./validations";
+import { registerVisit } from "./visits";
 
 export const createShortURL = async (
   body: { url: string; id?: string },
@@ -24,12 +25,14 @@ export const createShortURL = async (
   return results[0];
 };
 
-export const resolveURL = async (id: string) => {
+export const resolveURL = async (id: string, ip: string) => {
   const url = await knex("urls").where({ id }).select(["url"]).first();
 
   if (!url) {
     throw new httpError.NotFound("the ID is not valid");
   }
+
+  await registerVisit(id, ip);
 
   return url.url;
 };
@@ -83,8 +86,17 @@ export const getURLS = async (
 ) => {
   const results = await knex("urls")
     .where({ user_id })
+    .leftJoin("visits", "urls.id", "visits.url_id") // SELECT * FROM urls LEFT JOIN visits ON urls.id = visits.url_id
+    .select([
+      "urls.id",
+      "urls.url",
+      "urls.created_at",
+      knex.raw("count(visits.id) as visits_count"), // count visit
+    ])
     .limit(limit || 15)
-    .offset(offset || 0);
+    .offset(offset || 0)
+    .groupBy("urls.id")
+    .orderBy("urls.created_at", "desc"); //  Data terbaru akan muncul terlebih dahulu
 
   return results;
 };
