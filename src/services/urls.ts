@@ -57,7 +57,7 @@ export const updateURL = async (
 
   const results = await knex("urls")
     .where({ id })
-    .update({ url: body.url }, "*"); // "*" return object not array
+    .update({ url: body.url }, "*"); // "*" return all
 
   return results[0];
 };

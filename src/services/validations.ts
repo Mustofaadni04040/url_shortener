@@ -32,3 +32,15 @@ export const validateUpdateShortURL = (body: RequestBody) =>
   validateBody(body, {
     url: "required|url",
   });
+
+export const validateRegister = (body: RequestBody) =>
+  validateBody(body, {
+    username: "required|string|min:4|max:10",
+    password: "required|string|min:6",
+  });
+
+export const validateLogin = (body: RequestBody) =>
+  validateBody(body, {
+    username: "required|string",
+    password: "required|string",
+  });
