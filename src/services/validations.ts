@@ -16,7 +16,7 @@ const validateBody = (
       aggregatedErrors.push(validation.errors.first(key) as string);
     });
 
-    throw new httpError.BadRequest(aggregatedErrors.join(" , "));
+    throw new httpError.BadRequest(aggregatedErrors.join(", "));
   } else {
     return true;
   }

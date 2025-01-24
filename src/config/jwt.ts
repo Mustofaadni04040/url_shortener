@@ -10,7 +10,7 @@ export const validateJWt = async (token: string) => {
   try {
     const content = jwt.verify(token, JWT_SECRET);
 
-    return content;
+    return content as { [key: string]: any };
   } catch (error) {
     throw new httpError.Unauthorized("Please provide a valid token");
   }
