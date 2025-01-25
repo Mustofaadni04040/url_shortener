@@ -3,11 +3,8 @@ import httpError from "http-errors";
 
 type RequestBody = { [key: string]: any };
 
-const validateBody = (
-  body: RequestBody,
-  validation_schema: Validator.Rules
-) => {
-  let validation = new Validator(body, validation_schema);
+const validateBody = (body: RequestBody, validationSchema: Validator.Rules) => {
+  let validation = new Validator(body, validationSchema);
 
   if (validation.fails()) {
     const errors = validation.errors.all();
@@ -25,7 +22,7 @@ const validateBody = (
 export const validateCreateShortURL = (body: RequestBody) =>
   validateBody(body, {
     url: "required|url",
-    id: "string|min:5|max:10",
+    id: "string|min:5|max:10|not_in:auth,urls,visits",
   });
 
 export const validateUpdateShortURL = (body: RequestBody) =>
